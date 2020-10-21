@@ -10,6 +10,7 @@ class Prelaunchr_Activator {
 	public function activate() {
 
 		Prelaunchr_Activator::add_db_table();
+		Prelaunchr_Activator::add_db_table2();
 
 	}
 
@@ -45,12 +46,16 @@ class Prelaunchr_Activator {
 
 		global $wpdb;
 
-		$table_name = $wpdb->prefix . "prelaunchr2";
+		$table_name = $wpdb->prefix . "prelaunchr_ip_address";
 		  
 		$sql = "CREATE TABLE $table_name (
-			id INT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
-			ipaddress VARCHAR(254
-		);";
+				id INT(20) UNSIGNED NOT NULL AUTO_INCREMENT,
+				ipaddress VARCHAR(254),
+				email VARCHAR(254) DEFAULT NULL,
+				KEY `idx_email` (`email`),
+				PRIMARY KEY id (id)
+			)
+			;";
 
 		require_once( ABSPATH . 'wp-admin/includes/upgrade.php' );
 

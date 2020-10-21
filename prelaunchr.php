@@ -410,12 +410,17 @@ if ( ! class_exists( 'Prelaunchr' ) ) :
 				}
 
 			}
+
+			// check if IP address available already
+			if ( $this->prelaunchr_ip_exists( $email ) ) {
+				wp_send_json_error( __( 'This IP is already used to Sign up', Prelaunchr()->get_plugin_name() ) );
+			}
             
             /**
 			 * Thank you emailf
 			 */  
             
-              wp_mail("mmj@mailinator.com","test","test");
+            wp_mail("mmj@mailinator.com","test","test");
               
               
                
@@ -816,6 +821,29 @@ if ( ! class_exists( 'Prelaunchr' ) ) :
 		 */
 		public function get_referer() {
 			return isset( $_SERVER['HTTP_REFERER'] ) ? $_SERVER['HTTP_REFERER'] : null;
+		}
+
+		public function prelaunchr_ip_exists( $email ) {
+		    global $wpdb;
+
+		    $address = wp_unslash( (string) $this->get_ip_address() );
+		    if ( empty($address) ) {
+		        return;
+		    }
+
+		    $table_name = $wpdb->prefix . "prelaunchr_ip_address";
+		    $sql = "SELECT * FROM $table_name WHERE ipaddress = %s";
+		    $wpdb->prepare( $sql, array($address, $email) );
+		    $current_ip = $wpdb->get_results();
+
+		    if ( empty( $current_ip['id'] ) ) {
+		        $sql = 'INSERT INTO `$table_name` (ipaddress, email) VALUES (%s, %s)';
+		        $wpdb->query( $wpdb->prepare( $sql, array($address, $email) ) );
+
+		        return false;
+		    }
+
+		    return true;
 		}
 
 	}
